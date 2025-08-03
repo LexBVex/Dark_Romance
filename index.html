@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whispers Beneath Our Skin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        /* ---
+        🎨 MULTI-THEME PALETTE 🎨
+        --- */
+        :root {
+            /* General */
+            --text-primary: #f0e8df;
+            --text-secondary: #a9a199;
+            --font-display: 'Playfair Display', serif;
+            --font-body: 'Cormorant Garamond', serif;
+            --font-heading: 'Marcellus', serif;
+            --font-letter: 'Noto Serif', serif;
+
+            /* Home Theme */
+            --bg-home: #0c0f1a;
+            --accent-home: #e6c382;
+            
+            /* Desire Theme */
+            --bg-desire: #2a0a0e; /* Deep Crimson */
+            --accent-desire: #ff4747;
+            --border-desire: rgba(255, 71, 71, 0.3);
+
+            /* Longing Theme */
+            --bg-longing: #2c1f2b; /* Dusty Rose/Plum */
+            --accent-longing: #e8a0bf;
+            --border-longing: rgba(232, 160, 191, 0.3);
+
+            /* Moments Theme */
+            --bg-moments: #1a1a1a; /* Charcoal */
+            --accent-moments: #d3d3d3;
+            --border-moments: rgba(211, 211, 211, 0.3);
+            
+            /* Audio Theme */
+            --bg-audio: #f0e8df; /* Soft Cream */
+            --text-audio: #3a3a3a;
+            --accent-audio: #b8860b; /* Dark Gold */
+        }
+
+        /* --- Global Styles & Resets --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background-color 0.8s ease-in-out;
+            position: relative;
+        }
+
+        #hearts-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Sits behind everything */
+        }
+
+        /* --- Theme-based Body Backgrounds --- */
+        body.theme-home { background-color: var(--bg-home); }
+        body.theme-desire { background-color: var(--bg-desire); }
+        body.theme-longing { background-color: var(--bg-longing); }
+        body.theme-moments { background-color: var(--bg-moments); }
+        body.theme-letters, body.theme-soul { background-color: var(--bg-home); }
+        body.theme-audio { background-color: var(--bg-audio); }
+
+
+        /* --- Page Content Sections --- */
+        .page-content {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 8rem 2rem 5rem;
+            width: 100%;
+            position: relative; 
+            z-index: 2; 
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease-in-out, visibility 0.8s;
+            min-height: 100vh;
+        }
+        
+        #home, #audio { justify-content: center; padding-top: 5rem; }
+        .page-content.active { display: flex; opacity: 1; visibility: visible; }
+        
+        .page-title {
+            font-family: var(--font-display);
+            font-style: italic;
+            font-size: clamp(3rem, 7vw, 5rem);
+            margin-bottom: 4rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .theme-audio .page-title {
+            color: var(--text-audio);
+        }
+
+        /* --- Navigation --- */
+        .main-nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 1.5rem 0;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease 1s, visibility 0.5s ease 1s;
+        }
+
+        body.nav-visible .main-nav { opacity: 1; visibility: visible; }
+
+        .main-nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: var(--font-heading);
+            margin: 0 1.5rem;
+            padding: 0.5rem 0;
+            transition: all 0.3s ease;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-size: 1.1rem;
+        }
+        
+        .theme-audio .main-nav a {
+            color: var(--text-audio);
+        }
+
+        /* --- Page 1: Intro / Welcome --- */
+        #home .intro-poem { font-family: var(--font-display); font-size: clamp(1.5rem, 3.5vw, 2.5rem); line-height: 1.6; max-width: 800px; font-style: italic; }
+        #home .intro-poem p { opacity: 0; transform: translateY(20px); transition: opacity 1s ease, transform 1s ease; }
+        .btn { margin-top: 3rem; background: transparent; border: 1px solid var(--text-secondary); color: var(--text-secondary); padding: 14px 32px; font-family: var(--font-heading); letter-spacing: 2px; text-decoration: none; border-radius: 50px; transition: all 0.4s ease; cursor: pointer; font-size: 1rem; }
+        
+        .theme-home .btn:hover { color: var(--accent-home); border-color: var(--accent-home); box-shadow: 0 0 20px rgba(230, 195, 130, 0.4); }
+        .theme-desire .btn:hover { color: var(--accent-desire); border-color: var(--accent-desire); box-shadow: 0 0 20px var(--accent-desire); }
+        .theme-longing .btn:hover { color: var(--accent-longing); border-color: var(--accent-longing); box-shadow: 0 0 20px var(--accent-longing); }
+        .theme-moments .btn:hover { color: var(--accent-moments); border-color: var(--accent-moments); box-shadow: 0 0 20px var(--accent-moments); }
+        .theme-audio .btn { border-color: var(--text-audio); color: var(--text-audio); }
+        .theme-audio .btn:hover { color: var(--accent-audio); border-color: var(--accent-audio); box-shadow: 0 0 20px var(--accent-audio); }
+
+
+        /* --- Flip Card Layout (Desire & Longing) --- */
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; width: 100%; max-width: 1200px; perspective: 1200px; }
+        .flip-card { background-color: transparent; min-height: 280px; border: none; cursor: pointer; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.8s; transform-style: preserve-3d; }
+        .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; border-radius: 16px; transition: all 0.4s ease; }
+        .flip-card-front { font-family: var(--font-heading); font-size: 1.8rem; color: var(--text-secondary); letter-spacing: 2px; }
+        .flip-card-back { color: var(--text-primary); transform: rotateY(180deg); font-size: 1.4rem; line-height: 1.6; font-style: italic; }
+        
+        /* Desire Theme Card Contrast */
+        .theme-desire .flip-card-front, .theme-desire .flip-card-back { background-color: #1a0508; border: 1px solid var(--border-desire); }
+        .theme-desire .flip-card:hover .flip-card-front, .theme-desire .flip-card:hover .flip-card-back { border-color: var(--accent-desire); box-shadow: 0 0 25px var(--accent-desire); }
+        
+        /* Longing Theme Card */
+        .theme-longing .flip-card-front, .theme-longing .flip-card-back { background-color: rgba(0,0,0,0.2); border: 1px solid var(--border-longing); }
+        .theme-longing .flip-card:hover .flip-card-front, .theme-longing .flip-card:hover .flip-card-back { border-color: var(--accent-longing); box-shadow: 0 0 25px var(--accent-longing); }
+
+        /* --- Content Cards (Moments) --- */
+        .card-layout { display: flex; flex-direction: column; align-items: center; gap: 2.5rem; width: 100%; max-width: 800px; }
+        .content-card { background-color: rgba(0,0,0,0.2); border: 1px solid var(--border-moments); border-radius: 16px; padding: 2rem 2.5rem; width: 100%; font-size: 1.4rem; line-height: 1.7; font-style: italic; transition: transform 0.4s ease, box-shadow 0.4s ease; }
+        .content-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.2), 0 0 20px var(--accent-moments); }
+
+        /* --- Modals (Letters & Soul) --- */
+        .modal-trigger-container { cursor: pointer; transition: transform 0.3s ease; }
+        .modal-trigger-container:hover { transform: scale(1.1); }
+        .envelope-icon { width: 150px; height: auto; color: var(--text-secondary); transition: color 0.3s ease; }
+        .modal-trigger-container:hover .envelope-icon { color: var(--accent-home); }
+        
+        .modal { position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s; }
+        .modal.active { opacity: 1; visibility: visible; }
+        .modal-content { background-color: #1a1612; color: var(--text-primary); padding: 3rem 4rem; border: 1px solid var(--accent-home); border-radius: 8px; width: 90%; max-width: 700px; max-height: 80vh; overflow-y: auto; position: relative; box-shadow: 0 0 40px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.4s ease; }
+        .modal.active .modal-content { transform: scale(1); }
+        
+        .letter-body, .poem-body { font-family: var(--font-letter); font-size: 1.2rem; line-height: 1.8; text-align: left; }
+        .letter-body p, .poem-body p { margin-bottom: 1.5rem; } /* Creates space between paragraphs/stanzas */
+        .poem-body p { text-align: center; font-style: italic; } /* Center align poem */
+
+        .close-button { position: absolute; top: 1rem; right: 1.5rem; font-size: 2.5rem; font-weight: lighter; color: var(--text-secondary); cursor: pointer; transition: color 0.2s ease, transform 0.2s ease; }
+        .close-button:hover { color: var(--accent-home); transform: rotate(90deg); }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            .main-nav { flex-wrap: wrap; padding: 1rem; }
+            .main-nav a { margin: 0.2rem 0.8rem; font-size: 1rem; }
+            .page-content { padding: 6rem 1rem 4rem; }
+            .modal-content { padding: 2.5rem 1.5rem; }
+        }
+    </style>
+</head>
+<body class="theme-home">
+    
+    <canvas id="hearts-canvas"></canvas>
+
+    <div class="page-container">
+        <!-- Navigation -->
+        <nav class="main-nav">
+            <a data-target="home">Enter</a>
+            <a data-target="desire">Desire</a>
+            <a data-target="longing">Longing</a>
+            <a data-target="moments">Moments</a>
+            <a data-target="letters">Letters</a>
+            <a data-target="soul">Soul</a>
+            <a data-target="audio">Feelings</a>
+        </nav>
+
+        <!-- Page 1: Intro / Welcome -->
+        <section id="home" class="page-content active">
+            <div class="intro-poem">
+                <p>Come if you’re not afraid to be seen.</p>
+                <p>Not the face you show the world,</p>
+                <p>but the one you bury in silence.</p>
+                <p>I want that version of you—</p>
+                <p>the one no one survives loving.</p>
+            </div>
+            <a class="btn" data-target="desire">Give Me All of You</a>
+        </section>
+
+        <!-- Page 2: Things I Want To Do -->
+        <section id="desire" class="page-content">
+            <h1 class="page-title">Things I Want</h1>
+            <div class="card-grid">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">Claim</div>
+                        <div class="flip-card-back">
+                            I want you pinned—writhing beneath me, lips bruised, breath stolen—while my mouth marks every curve as mine.
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">Unravel</div>
+                        <div class="flip-card-back">
+                            Let me strip you down—layer by breathless layer—until you’re trembling, exposed, and begging for the ruin I bring.
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">Consume</div>
+                        <div class="flip-card-back">
+                            I crave your sounds—your moans, your gasps—as I bury my mouth in places no one else dares touch, devouring you whole.
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">Ignite</div>
+                        <div class="flip-card-back">
+                            I’ll drag my hands up your thighs, slow and merciless, until your body burns and your mind forgets anything but me.
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">Tangle</div>
+                        <div class="flip-card-back">
+                            I want you trapped—breath tangled with mine, legs wrapped tight, no escape—until you’re lost, ruined, and all mine.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Page 3: Things I Long For -->
+<section id="longing" class="page-content">
+    <h1 class="page-title">Things I Long For</h1>
+    <div class="card-grid">
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">The Kiss</div>
+                <div class="flip-card-back">
+                    I crave your lips crushed against mine—rough, breathless—kissing you until you forget where you are and who you were before me.
+                </div>
+            </div>
+        </div>
+        
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">Your Touch</div>
+                <div class="flip-card-back">
+                    I want your skin under my hands—tight grip, no mercy—dragging my fingers slow over you, watching you come undone in my hold.
+                </div>
+            </div>
+        </div>
+        
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">The Taste</div>
+                <div class="flip-card-back">
+                    I ache to taste you—mouth hard on your throat, tongue tracing heat—igniting something that doesn’t just burn, it consumes.
+                </div>
+            </div>
+        </div>
+        
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">The Dance</div>
+                <div class="flip-card-back">
+                    I want that dance—our bodies tangled, lips bruised, hands locked tight—where every move says: *you’re mine.*
+                </div>
+            </div>
+        </div>
+        
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">The Secret</div>
+                <div class="flip-card-back">
+                    I want my mouth buried deep, tasting every secret you’ve never spoken—leaving you shaking, wrecked, and begging for more.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+        <!-- Page 4: Moments We Share -->
+        <!-- Page 4: Moments I Crave -->
+        <section id="moments" class="page-content">
+            <h1 class="page-title">Moments I Crave</h1>
+            <div class="card-layout">
+                <div class="content-card">I’ll take your waist in both hands, tight, dragging you into me until there’s no space left—just breath and hunger and heat.</div>
+                <div class="content-card">I want to trace your curves with my mouth, slow at first—then harder, deeper—until your body forgets how to stand still.</div>
+                <div class="content-card">Your lips—mine to claim, to bite, to silence. I want you gasping my name, breathless beneath the weight of wanting.</div>
+                <div class="content-card">Let me bury my hands in your hair, yank you to me, force your mouth open with mine—no questions, just need.</div>
+                <div class="content-card">I’ll bury myself in every part of you—mind, body, soul—until you can’t tell where I end and you begin.</div>
+            </div>
+        </section>
+
+        <!-- Page 5: Letters -->
+        <section id="letters" class="page-content">
+            <h1 class="page-title">Our Shared Fantasy</h1>
+            <div class="modal-trigger-container" data-modal-target="letter-modal">
+                <svg class="envelope-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
+        </section>
+
+        <!-- Page 6: Not Just Flesh (Soul) -->
+        <section id="soul" class="page-content">
+            <h1 class="page-title">Not Just Flesh</h1>
+            <a class="btn" data-modal-target="soul-modal">Click Me</a>
+        </section>
+        
+        <!-- Page 7: Actual Feeling For You (Audio) -->
+        <section id="audio" class="page-content">
+            <h1 class="page-title">Actual Feeling For You</h1>
+            <a id="play-audio-btn" class="btn">Play My Voice</a>
+        </section>
+    </div>
+    
+    <!-- This is where your audio file goes. It's hidden from the user. -->
+    <audio id="my-audio" src="https://media.vocaroo.com/mp3/130tUvDtSgdf"></audio>
+
+    <!-- Modal for Letters Page -->
+    <<div id="letter-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <div class="letter-body">
+            <p>You step inside. I don’t speak—I just grab your waist, slam the door shut, and crush my mouth to yours like I’ve been starving for you. My tongue claims yours, my hand already sliding down, gripping your thigh hard enough to make you gasp.</p>
+            
+            <p>Your nails rake through my hair as your teeth sink into my neck, rough and wild. I growl low in your ear and press you back until we crash onto the sofa. You climb onto my lap, straddling me, grinding slow with intention. I grip your ass, pulling you against the hard length straining beneath my jeans.</p>
+            
+            <p>“You feel that?” I breathe against your lips. “That’s mine. Every inch, for you.”</p>
+            
+            <p>You moan into my mouth, hungry. I tear your shirt off. Lift you up like you weigh nothing. I carry you to the bed, eyes locked on yours like a warning: don’t run.</p>
+            
+            <p>I throw you down, rip your jeans off, and crawl over you—eyes dark, breath heavy. You’re already soaked. I spread you open, kiss the inside of your thighs slow just to tease, then bury my mouth between them like I own you. Your body arches, hands clutching the sheets, your voice breaking in my hair.</p>
+            
+            <p>You beg. You tremble. But I don’t stop. Not until you're ruined under me.</p>
+            
+            <p>Later, I drag you into the shower. Steam rising. Your back pressed to my chest, skin slick, breathless. You turn, kiss me slow—deep and dangerous—and I let you take control.</p>
+            
+            <p>You slam me against the wall this time. Bite my lip until I taste blood. “Now,” you whisper, voice low, breath hot against my ear, “I’m in charge.”</p>
+        </div>
+    </div>
+</div>
+    
+    <!-- Modal for Soul Page -->
+    <div id="soul-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div class="poem-body">
+                <p>I love more than just your body.</p>
+                <p>I’ve touched your skin,<br>but it’s what’s beneath that I truly want.</p>
+                <p>I don’t just want your body<br>I want your thoughts,<br>your quiet moments,<br>the parts no one else notices.</p>
+                <p>I want to know your soul,<br>to hold the places where you hurt,<br>not just where you shine.</p>
+                <p>This love<br>it’s not just desire,<br>it’s connection.<br>It’s how your spirit fits<br>with mine in the dark.</p>
+                <p>Even when the passion fades,<br>I’ll still be here,<br>reaching for you,<br>loving every part of who you are.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const navLinks = document.querySelectorAll('.main-nav a, .btn');
+            const pages = document.querySelectorAll('.page-content');
+            const modals = document.querySelectorAll('.modal');
+            const modalTriggers = document.querySelectorAll('[data-modal-target]');
+            const closeButtons = document.querySelectorAll('.close-button');
+            const audioPlayer = document.getElementById('my-audio');
+            const playAudioBtn = document.getElementById('play-audio-btn');
+            
+            // --- Page Switching Logic ---
+            function switchPage(targetId) {
+                // Deactivate all pages first
+                document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+
+                // Activate the target page
+                const activePage = document.getElementById(targetId);
+                if (activePage) {
+                    activePage.classList.add('active');
+                }
+
+                document.querySelectorAll('.main-nav a').forEach(link => {
+                    link.classList.toggle('active', link.dataset.target === targetId);
+                });
+                
+                body.className = ''; // Clear old theme
+                body.classList.add('theme-' + targetId);
+                if (targetId !== 'home') {
+                    body.classList.add('nav-visible');
+                }
+                
+                if (activePage && targetId === 'home') {
+                    const introLines = activePage.querySelectorAll('.intro-poem p');
+                    introLines.forEach((line, index) => {
+                        setTimeout(() => {
+                            line.style.opacity = 1;
+                            line.style.transform = 'translateY(0)';
+                        }, index * 400 + 500);
+                    });
+                }
+            }
+
+            navLinks.forEach(link => {
+                if (!link.dataset.modalTarget) { // Ensure it's a page link, not a modal trigger
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        switchPage(link.dataset.target);
+                    });
+                }
+            });
+
+            // --- Modal Logic ---
+            function openModal(modal) {
+                if (modal) modal.classList.add('active');
+            }
+
+            function closeModal(modal) {
+                if (modal) modal.classList.remove('active');
+            }
+
+            modalTriggers.forEach(trigger => {
+                trigger.addEventListener('click', () => {
+                    const modal = document.getElementById(trigger.dataset.modalTarget);
+                    openModal(modal);
+                });
+            });
+
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    closeModal(button.closest('.modal'));
+                });
+            });
+
+            modals.forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        closeModal(modal);
+                    }
+                });
+            });
+
+            // --- Audio Player Logic ---
+            playAudioBtn.addEventListener('click', () => {
+                if (audioPlayer.src && audioPlayer.src !== window.location.href) { // check if a src is set
+                     if (audioPlayer.paused) {
+                        audioPlayer.play();
+                        playAudioBtn.textContent = 'Pause';
+                    } else {
+                        audioPlayer.pause();
+                        playAudioBtn.textContent = 'Play My Voice';
+                    }
+                } else {
+                    playAudioBtn.textContent = 'No Audio Set';
+                }
+            });
+
+            audioPlayer.addEventListener('ended', () => {
+                playAudioBtn.textContent = 'Play My Voice';
+            });
+
+
+            // --- Floating Hearts Canvas ---
+            const canvas = document.getElementById('hearts-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            let hearts = [];
+
+            function Heart(x, y, size, speed, opacity) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.speed = speed;
+                this.opacity = opacity;
+            }
+
+            Heart.prototype.draw = function() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = 'rgba(255, 71, 71, 0.5)'; // Crimson heart color
+                ctx.beginPath();
+                let topCurveHeight = this.size * 0.3;
+                ctx.moveTo(this.x, this.y + topCurveHeight);
+                // Top left curve
+                ctx.bezierCurveTo(this.x, this.y, this.x - this.size / 2, this.y, this.x - this.size / 2, this.y + topCurveHeight);
+                // Bottom left curve
+                ctx.bezierCurveTo(this.x - this.size / 2, this.y + (this.size + topCurveHeight) / 2, this.x, this.y + (this.size + topCurveHeight) / 2, this.x, this.y + this.size);
+                // Bottom right curve
+                ctx.bezierCurveTo(this.x, this.y + (this.size + topCurveHeight) / 2, this.x + this.size / 2, this.y + (this.size + topCurveHeight) / 2, this.x + this.size / 2, this.y + topCurveHeight);
+                // Top right curve
+                ctx.bezierCurveTo(this.x + this.size / 2, this.y, this.x, this.y, this.x, this.y + topCurveHeight);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+
+            Heart.prototype.update = function() {
+                this.y -= this.speed;
+                if (this.y < -this.size) {
+                    this.y = canvas.height + this.size;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+
+            function initHearts() {
+                hearts = [];
+                const numHearts = Math.floor(canvas.width / 50);
+                for (let i = 0; i < numHearts; i++) {
+                    const x = Math.random() * canvas.width;
+                    const y = Math.random() * canvas.height;
+                    const size = Math.random() * 20 + 10;
+                    const speed = Math.random() * 1 + 0.5;
+                    const opacity = Math.random() * 0.5 + 0.2;
+                    hearts.push(new Heart(x, y, size, speed, opacity));
+                }
+            }
+
+            function animateHearts() {
+                if(canvas.getContext){
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    for (let i = 0; i < hearts.length; i++) {
+                        hearts[i].update();
+                        hearts[i].draw();
+                    }
+                }
+                requestAnimationFrame(animateHearts);
+            }
+            
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                initHearts();
+            });
+
+            initHearts();
+            animateHearts();
+
+            // --- Initial Page Load ---
+            switchPage('home');
+        });
+    </script>
+</body>
+</html>
